@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "fade.source-pins.v1",
+  "dependencies": [
+    {"name":"liquidity-launcher","repository":"https://github.com/Uniswap/liquidity-launcher.git","commit":"e4660afe4f820f4a39181c7ea1f9bce6c423499f"},
+    {"name":"openzeppelin-uniswap-hooks","repository":"https://github.com/OpenZeppelin/uniswap-hooks.git","commit":"26dc8e53f812a1ca390d470342adb6cd8c3286ad"},
+    {"name":"v4-core","repository":"https://github.com/Uniswap/v4-core.git","commit":"59d3ecf53afa9264a16bba0e38f4c5d2231f80bc"},
+    {"name":"v4-periphery","repository":"https://github.com/Uniswap/v4-periphery.git","commit":"ad04c9f24a170accf5ea1b2836bbafd514537ca6"},
+    {"name":"openzeppelin-contracts","repository":"https://github.com/OpenZeppelin/openzeppelin-contracts.git","commit":"21c8312b022f495ebe3621d5daeed20552b43ff9"},
+    {"name":"forge-std","repository":"https://github.com/foundry-rs/forge-std.git","commit":"3b20d60d14b343ee4f908cb8079495c07f5e8981"},
+    {"name":"permit2","repository":"https://github.com/Uniswap/permit2.git","commit":"cc56ad0f3439c502c246fc5cfcc3db92bb8b7219"},
+    {"name":"solady","repository":"https://github.com/Vectorized/solady.git","commit":"33b4b98e350bbcba6aa85642957c313e98b5f911"},
+    {"name":"uerc20-factory","repository":"https://github.com/Uniswap/uerc20-factory.git","commit":"6f18f1cdf80dc173d33d3cd6bbe91ee52c314f68"},
+    {"name":"blocknumberish","repository":"https://github.com/Uniswap/blocknumberish.git","commit":"38fe20bc0341d5bc2780d41f90dadb70e10f8cea"},
+    {"name":"solmate","repository":"https://github.com/transmissions11/solmate.git","commit":"4b47a19038b798b4a33d9749d25e570443520647"},
+    {"name":"shards-v1","repository":"https://github.com/jesse-stahl/shards-v1.git","commit":"91b38f3de64d96cac7e29f127c004f128fc1da59"}
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "fade.model-manifest.v1",
+  "modelId": "fade-v1",
+  "lifecycle": "candidate-source",
+  "network": {"chainId": 1, "name": "ethereum-mainnet"},
+  "market": {"quoteAsset": "native-eth", "lpFeePips": 0, "tickSpacing": 200},
+  "token": {"supply": "1000000000000000000000000000", "decimals": 18, "transferTaxBps": 0},
+  "liquidity": {"creatorEthDeposit": "0", "oneSided": true, "permanentlyLocked": true, "minimumInitialBuyWei": "600000000000000"},
+  "fees": {
+    "basis": "gross-canonical-pool-volume",
+    "startTotalBps": 300,
+    "endTotalBps": 100,
+    "decayDurationSeconds": 86400,
+    "programmableBps": 10,
+    "programmableTreasury": "0x4957f49620AFf3Adbbe8195a4f633E49cc93376c",
+    "creatorRecipient": "launch-wallet",
+    "denomination": "native-eth"
+  },
+  "hookPermissions": ["beforeInitialize", "beforeSwap", "afterSwap", "beforeSwapReturnDelta", "afterSwapReturnDelta"],
+  "authority": {"owner": false, "proxy": false, "pause": false, "feeSetter": false, "recipientSetter": false, "rescue": false},
+  "deployment": {"performed": false, "addresses": []},
+  "review": {"independentAudit": false, "programmableApproved": false, "launchAuthorized": false}
+}
