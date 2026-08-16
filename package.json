@@ -11,6 +11,9 @@
     "test": "forge test --offline",
     "test:ci": "FOUNDRY_PROFILE=ci forge test --offline"
   },
+  "dependencies": {
+    "@uniswap/universal-router": "2.1.0"
+  },
   "engines": {
     "node": ">=24"
   }

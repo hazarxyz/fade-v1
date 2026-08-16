@@ -1,7 +1,20 @@
-# fade-v1
+# FADE v1
 
-Idea-bound custom tradable Uniswap v4 implementation for `ethereum-native-eth-v4`. Intent SHA-256: `sha256:7f28e726fbc9db8d2a6cbb4c26a74d8edea1ca3342538cac18d0f0a0b753976b`.
+FADE is a custom Uniswap v4 launch prototype with a fixed one-billion-token supply, a one-sided permanently locked position, and an atomic minimum initial buy of `0.0006 ETH`.
 
-Custom tradable source is not restricted to bundled profiles or templates. The Builder may implement any technically viable architecture and preserve it with tests. The complete caller-supplied root contract configuration, dependencies, remappings and Foundry settings are preserved byte-for-byte with Git modes; their semantics remain unexecuted. All planned commands remain `NOT_RUN`; dependency acquisition and candidate execution require an authorized external sandbox.
+Its native-side hook fee decays linearly from 3% to 1% over 24 hours. A fixed 10 bps of gross native swap volume accrues to the immutable Programmable treasury; the creator receives the remainder. The v4 LP fee and token transfer tax are both zero.
 
-Launch policy is checked at submission time. This source repository is **NOT_SUBMITTED** and **NOT_APPROVED** and makes no audit, deployment, production, publication, Registry, or launch claim.
+## Local verification
+
+```sh
+npm install --ignore-scripts
+npm test
+npm run fmt:check
+npm run build
+npm run manifest:verify
+node "$PROGRAMMABLE_SKILL_ROOT/scripts/cli.mjs" open-world validate open-world-v2
+```
+
+The test suite covers all four swap quadrants, V4Quoter, Universal Router/V4Planner, Permit2 funding, multihop hook data, deadline/slippage/funding rejection, fuzzing, invariants, locked liquidity, and fee claims.
+
+This repository and its Applicant package are **NOT_APPROVED**. They make no audit, deployment, Registry acceptance, production, or launch claim. The custom policy-neutral launch manifest remains subject to independent Programmable review.

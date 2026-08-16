@@ -1,5 +1,5 @@
-# GitHub submission handoff
+# GitHub submission boundary
 
-Status: **NOT_SUBMITTED**.
+This repository is the public Applicant-controlled FADE source package. The separate Application V3.1 record in the Programmable submission repository is authoritative for Draft-PR status.
 
-This repository is a local custom-tradable implementation. It creates no approval, audit, deployment, publication, Registry write, or launch.
+Source publication or a Draft PR creates no approval, audit, deployment, Registry acceptance, production state, or launch authorization.

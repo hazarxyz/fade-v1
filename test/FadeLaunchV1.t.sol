@@ -364,6 +364,30 @@ contract FadeLaunchV1Test is Deployers {
         assertEq(programmableAfter - programmableBefore, expectedProgrammable);
     }
 
+    function test_nonemptyHookDataRevertsBeforeFeeEffects() public {
+        FadeLaunchV1.LaunchResult memory result = _launch();
+        PoolKey memory key = launcher.poolKey(result.token);
+        PoolSwapTest router = new PoolSwapTest(manager);
+        address trader = makeAddr("nonemptyHookDataTrader");
+        vm.deal(trader, 1 ether);
+        (uint256 creatorBefore, uint256 programmableBefore) = _accrued(result.poolId);
+
+        vm.prank(trader);
+        vm.expectRevert();
+        router.swap{ value: 0.05 ether }(
+            key,
+            SwapParams({
+                zeroForOne: true, amountSpecified: -int256(0.05 ether), sqrtPriceLimitX96: TickMath.MIN_SQRT_PRICE + 1
+            }),
+            _settings(),
+            hex"01"
+        );
+
+        (uint256 creatorAfter, uint256 programmableAfter) = _accrued(result.poolId);
+        assertEq(creatorAfter, creatorBefore);
+        assertEq(programmableAfter, programmableBefore);
+    }
+
     function test_buyExactOutputChargesTheCurrentEthFee() public {
         FadeLaunchV1.LaunchResult memory result = _launch();
         PoolKey memory key = launcher.poolKey(result.token);

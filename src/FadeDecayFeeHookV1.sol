@@ -77,6 +77,7 @@ contract FadeDecayFeeHookV1 is BaseHook, IUnlockCallback, ReentrancyGuardTransie
     error PoolNotRegistered(bytes32 poolId);
     error UnauthorizedInitializer(address caller, address expected);
     error UnexpectedUnlockResult();
+    error UnexpectedHookData(uint256 length);
     error UnrecognizedToken(address token);
     error ZeroAddress();
 
@@ -243,11 +244,12 @@ contract FadeDecayFeeHookV1 is BaseHook, IUnlockCallback, ReentrancyGuardTransie
     }
 
     /// @inheritdoc BaseHook
-    function _beforeSwap(address sender, PoolKey calldata key, SwapParams calldata params, bytes calldata)
+    function _beforeSwap(address sender, PoolKey calldata key, SwapParams calldata params, bytes calldata hookData)
         internal
         override
         returns (bytes4, BeforeSwapDelta, uint24)
     {
+        _validateHookData(hookData);
         bytes32 poolId = _registeredPoolId(key);
         bool nativeIsSpecified = params.zeroForOne == (params.amountSpecified < 0);
         if (!nativeIsSpecified) {
@@ -269,8 +271,9 @@ contract FadeDecayFeeHookV1 is BaseHook, IUnlockCallback, ReentrancyGuardTransie
         PoolKey calldata key,
         SwapParams calldata params,
         BalanceDelta delta,
-        bytes calldata
+        bytes calldata hookData
     ) internal override returns (bytes4, int128) {
+        _validateHookData(hookData);
         bytes32 poolId = _registeredPoolId(key);
         bool nativeIsSpecified = params.zeroForOne == (params.amountSpecified < 0);
         if (nativeIsSpecified) {
@@ -283,6 +286,10 @@ contract FadeDecayFeeHookV1 is BaseHook, IUnlockCallback, ReentrancyGuardTransie
         if (totalFee == 0) return (IHooks.afterSwap.selector, 0);
 
         return (IHooks.afterSwap.selector, totalFee.toInt256().toInt128());
+    }
+
+    function _validateHookData(bytes calldata hookData) private pure {
+        if (hookData.length != 0) revert UnexpectedHookData(hookData.length);
     }
 
     function _verifySpecifiedNativeDelta(bytes32 poolId, SwapParams calldata params, BalanceDelta delta) private view {

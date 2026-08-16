@@ -8,6 +8,7 @@
     {"name":"openzeppelin-contracts","repository":"https://github.com/OpenZeppelin/openzeppelin-contracts.git","commit":"21c8312b022f495ebe3621d5daeed20552b43ff9"},
     {"name":"forge-std","repository":"https://github.com/foundry-rs/forge-std.git","commit":"3b20d60d14b343ee4f908cb8079495c07f5e8981"},
     {"name":"permit2","repository":"https://github.com/Uniswap/permit2.git","commit":"cc56ad0f3439c502c246fc5cfcc3db92bb8b7219"},
+    {"name":"universal-router","repository":"https://github.com/Uniswap/universal-router.git","version":"2.1.0","package":"@uniswap/universal-router@2.1.0"},
     {"name":"solady","repository":"https://github.com/Vectorized/solady.git","commit":"33b4b98e350bbcba6aa85642957c313e98b5f911"},
     {"name":"uerc20-factory","repository":"https://github.com/Uniswap/uerc20-factory.git","commit":"6f18f1cdf80dc173d33d3cd6bbe91ee52c314f68"},
     {"name":"blocknumberish","repository":"https://github.com/Uniswap/blocknumberish.git","commit":"38fe20bc0341d5bc2780d41f90dadb70e10f8cea"},
