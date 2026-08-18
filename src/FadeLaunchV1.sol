@@ -208,6 +208,7 @@ contract FadeLaunchV1 is IUnlockCallback, ReentrancyGuardTransient {
             revert InitialBuyBelowMinimum(msg.value, MIN_INITIAL_BUY_WEI);
         }
         result.initialBuyNativeAmount = msg.value;
+        uint256 retainedNativeBalance = address(this).balance - msg.value;
 
         bytes32 effectiveGraffiti = _effectiveGraffiti(msg.sender, parameters.creatorSalt);
         result.token = tokenFactory.getUERC20Address(
@@ -240,7 +241,8 @@ contract FadeLaunchV1 is IUnlockCallback, ReentrancyGuardTransient {
             revert TokenCustodyMismatch(launcherTokenBalance, positionManagerTokenBalance);
         }
 
-        result.initialBuyTokenAmount = _executeInitialBuy(key, msg.sender, result.initialBuyNativeAmount);
+        result.initialBuyTokenAmount =
+            _executeInitialBuy(key, msg.sender, result.initialBuyNativeAmount, retainedNativeBalance);
 
         // ReentrancyGuardTransient protects the complete launch; Slither does not recognize its transient lock.
         // slither-disable-next-line reentrancy-benign
@@ -281,15 +283,17 @@ contract FadeLaunchV1 is IUnlockCallback, ReentrancyGuardTransient {
         return _poolKey(token);
     }
 
-    function _executeInitialBuy(PoolKey memory key, address creator, uint256 nativeAmount)
-        private
-        returns (uint256 tokenAmount)
-    {
+    function _executeInitialBuy(
+        PoolKey memory key,
+        address creator,
+        uint256 nativeAmount,
+        uint256 retainedNativeBalance
+    ) private returns (uint256 tokenAmount) {
         bytes memory result = poolManager.unlock(
             abi.encode(InitialBuyCallbackData({ key: key, creator: creator, nativeAmount: nativeAmount }))
         );
         tokenAmount = abi.decode(result, (uint256));
-        if (tokenAmount == 0 || address(this).balance != 0) {
+        if (tokenAmount == 0 || address(this).balance != retainedNativeBalance) {
             revert InvalidInitialBuyResult(tokenAmount, address(this).balance);
         }
     }

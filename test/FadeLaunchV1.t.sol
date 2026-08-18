@@ -31,6 +31,12 @@ import { FadeDecayFeeHookV1 } from "../src/FadeDecayFeeHookV1.sol";
 import { LockedPositionFeeForwarderFactoryV1 } from "../src/LockedPositionFeeForwarderFactoryV1.sol";
 import { FadeLaunchV1 } from "../src/FadeLaunchV1.sol";
 
+contract ForceNativeBalance {
+    constructor(address payable recipient) payable {
+        selfdestruct(recipient);
+    }
+}
+
 contract FadeLaunchV1Test is Deployers {
     using SafeCast for uint256;
     using StateLibrary for IPoolManager;
@@ -161,6 +167,20 @@ contract FadeLaunchV1Test is Deployers {
         assertEq(IERC20(largerResult.token).balanceOf(creator), largerResult.initialBuyTokenAmount);
         assertEq(creator.balance, creatorEthBefore - largerBuy);
         assertEq(address(launcher).balance, 0);
+    }
+
+    function test_forcedNativeBalanceCannotBlockLaunch() public {
+        uint256 creatorEthBefore = creator.balance;
+        vm.deal(address(this), 1);
+        new ForceNativeBalance{ value: 1 }(payable(address(launcher)));
+        assertEq(address(launcher).balance, 1);
+
+        FadeLaunchV1.LaunchResult memory result = _launch();
+
+        assertEq(result.initialBuyNativeAmount, MIN_INITIAL_BUY_WEI);
+        assertGt(result.initialBuyTokenAmount, 0);
+        assertEq(creator.balance, creatorEthBefore - MIN_INITIAL_BUY_WEI);
+        assertEq(address(launcher).balance, 1);
     }
 
     function test_launchRoundTripsNonemptyOfficialExtraDataWithoutAbiGarbage() public {
