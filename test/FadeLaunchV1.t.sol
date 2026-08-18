@@ -12,7 +12,10 @@ import { UERC20Factory } from "@uniswap/uerc20-factory/src/factories/UERC20Facto
 import { UERC20Metadata } from "@uniswap/uerc20-factory/src/libraries/UERC20MetadataLibrary.sol";
 import { UERC20 } from "@uniswap/uerc20-factory/src/tokens/UERC20.sol";
 import { IPoolManager } from "@uniswap/v4-core/src/interfaces/IPoolManager.sol";
+import { IHooks } from "@uniswap/v4-core/src/interfaces/IHooks.sol";
+import { CustomRevert } from "@uniswap/v4-core/src/libraries/CustomRevert.sol";
 import { FullMath } from "@uniswap/v4-core/src/libraries/FullMath.sol";
+import { Hooks } from "@uniswap/v4-core/src/libraries/Hooks.sol";
 import { StateLibrary } from "@uniswap/v4-core/src/libraries/StateLibrary.sol";
 import { TickMath } from "@uniswap/v4-core/src/libraries/TickMath.sol";
 import { PoolSwapTest } from "@uniswap/v4-core/src/test/PoolSwapTest.sol";
@@ -406,6 +409,43 @@ contract FadeLaunchV1Test is Deployers {
         (uint256 creatorAfter, uint256 programmableAfter) = _accrued(result.poolId);
         assertEq(creatorAfter, creatorBefore);
         assertEq(programmableAfter, programmableBefore);
+    }
+
+    function test_rejectsSpecifiedNativePartialFillWithoutPersistentEffects() public {
+        FadeLaunchV1.LaunchResult memory result = _launch();
+        PoolKey memory key = launcher.poolKey(result.token);
+        PoolSwapTest router = new PoolSwapTest(manager);
+        address trader = makeAddr("partialFillTrader");
+        vm.deal(trader, 1 ether);
+        (uint256 creatorBefore, uint256 programmableBefore) = _accrued(result.poolId);
+        (uint160 sqrtPriceBefore, int24 tickBefore,,) = manager.getSlot0(key.toId());
+        bytes memory partialFillReason =
+            abi.encodeWithSelector(FadeDecayFeeHookV1.PartialFillUnsupported.selector, 0.0485 ether, 1);
+        bytes memory wrappedPartialFillReason = abi.encodeWithSelector(
+            CustomRevert.WrappedError.selector,
+            address(feeHook),
+            IHooks.afterSwap.selector,
+            partialFillReason,
+            abi.encodePacked(Hooks.HookCallFailed.selector)
+        );
+
+        vm.prank(trader);
+        vm.expectRevert(wrappedPartialFillReason);
+        router.swap{ value: 0.05 ether }(
+            key,
+            SwapParams({
+                zeroForOne: true, amountSpecified: -int256(0.05 ether), sqrtPriceLimitX96: sqrtPriceBefore - 1
+            }),
+            _settings(),
+            ""
+        );
+
+        (uint256 creatorAfter, uint256 programmableAfter) = _accrued(result.poolId);
+        (uint160 sqrtPriceAfter, int24 tickAfter,,) = manager.getSlot0(key.toId());
+        assertEq(creatorAfter, creatorBefore);
+        assertEq(programmableAfter, programmableBefore);
+        assertEq(sqrtPriceAfter, sqrtPriceBefore);
+        assertEq(tickAfter, tickBefore);
     }
 
     function test_buyExactOutputChargesTheCurrentEthFee() public {
